@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.system.api.mapper.ApiKeyMapper">
+
+    <sql id="apiKeyItem">
+        id,apply_no applyNo,information,remark,status,api_key apiKey,api_secret apiSecret,user_id userId,create_time createTime,update_time updateTime,init_tag initTag
+    </sql>
+
+    <insert id="insert" parameterType="org.system.api.model.ApiKeyDomain">
+        insert into
+            api_key(id,apply_no,information,remark,status,api_key,api_secret,user_id,create_time,update_time,init_tag)
+        values
+            (null,#{applyNo},#{information},#{remark},#{status},#{apiKey},#{apiSecret},#{userId},#{createTime},#{updateTime},#{initTag})
+    </insert>
+
+    <select id="getApiKeyByApply" parameterType="string" resultType="org.system.api.model.ApiKeyDomain">
+        select
+        <include refid="apiKeyItem" />
+        from
+        api_key
+        where
+        apply_no=#{applyNo}
+    </select>
+
+    <select id="getApiKeyByUserId" parameterType="string" resultType="org.system.api.model.ApiKeyDomain">
+        select
+        <include refid="apiKeyItem" />
+        from
+        api_key
+        where
+        user_id=#{userId}
+    </select>
+
+    <select id="getApiKeyDomain" parameterType="Integer" resultType="org.system.api.model.ApiKeyDomain">
+        select
+        <include refid="apiKeyItem" />
+        from
+        api_key
+        where
+        id=#{id}
+    </select>
+
+    <update id="updateApplyByNo" parameterType="org.system.api.model.ApiKeyDomain">
+        UPDATE api_key
+        SET api_key = #{apiKey},
+        api_secret = #{apiSecret},
+        status = #{status},
+        update_time = #{updateTime}
+        WHERE apply_no = #{applyNo}
+    </update>
+
+</mapper>
