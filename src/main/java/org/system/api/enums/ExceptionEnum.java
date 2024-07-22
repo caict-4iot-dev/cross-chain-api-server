@@ -27,7 +27,9 @@ public enum ExceptionEnum {
 
     API_KEY_IS_EXISTED(111, "user id only can has one api key"),
 
-    NOT_API_MANAGER(111, "not an api manager"),
+    NOT_API_MANAGER(112, "not an api manager"),
+
+    ACCESS_TOKEN_NOT_EXPIRED(113, "the access token has not expired"),
 
     ;
     private Integer errorCode;

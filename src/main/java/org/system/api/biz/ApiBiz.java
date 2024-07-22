@@ -14,6 +14,7 @@ import com.alipay.antchain.bridge.relayer.facade.admin.IRelayerAdminClient;
 import com.alipay.antchain.bridge.relayer.facade.admin.types.CrossChainMsgACLItem;
 import com.alipay.antchain.bridge.relayer.facade.admin.types.SysContractsInfo;
 import com.alipay.antchain.bridge.relayer.facade.admin.utils.FacadeException;
+import com.auth0.jwt.exceptions.JWTVerificationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,7 +63,7 @@ public class ApiBiz {
     @Autowired
     private RedisUtil redisUtil;
 
-    private static final String pluginServerId = "testps";
+    private static final String pluginServerId = "bifPS.id";
 
     public DataResp<ApplyDomainNameRespDto> applyDomainName(String accessToken, ApplyDomainNameReqDto applyDomainNameReqDto) {
         DataResp<ApplyDomainNameRespDto> dataResp = new DataResp<ApplyDomainNameRespDto>();
@@ -79,8 +80,11 @@ public class ApiBiz {
                 throw new APIException(ExceptionEnum.ACCESS_TOKEN_INVALID);
             }
 
+            if (applyDomainNameReqDto.getPublicKey().length() != 70) {
+                throw new APIException(ExceptionEnum.PARAM_ERROR.getErrorCode(), "the length of the public key is 70");
+            }
             if (!PublicKeyManager.isPublicKeyValid(applyDomainNameReqDto.getPublicKey())) {
-                throw new APIException(ExceptionEnum.PARAM_ERROR);
+                throw new APIException(ExceptionEnum.PARAM_ERROR.getErrorCode(), "invalid public key");
             }
 
             BIDpublicKeyOperation[] biDpublicKeyOperation = new BIDpublicKeyOperation[1];
@@ -90,13 +94,15 @@ public class ApiBiz {
             BIDDocumentOperation bidDocumentOperation = new BIDDocumentOperation();
             bidDocumentOperation.setPublicKey(biDpublicKeyOperation);
 
-            String applyNo = relayAdminClient.applyDomainNameCert("", applyDomainNameReqDto.getDomainName(), bidDocumentOperation);
+            String applyNo = relayAdminClient.applyDomainNameCert("", applyDomainNameReqDto.getDomainName().trim(), bidDocumentOperation);
             ApplyDomainNameRespDto applyDomainNameRespDto = new ApplyDomainNameRespDto();
             applyDomainNameRespDto.setApplyNo(applyNo);
             dataResp.setData(applyDomainNameRespDto);
             dataResp.buildSuccessField();
         } catch (APIException e) {
             dataResp.buildAPIExceptionField(e);
+        } catch (IllegalArgumentException e) {
+            dataResp.buildArgumentExceptionField(e);
         } catch (FacadeException e) {
             dataResp.buildFacadeExceptionField(e);
         } catch (Exception e) {
@@ -121,13 +127,15 @@ public class ApiBiz {
                 throw new APIException(ExceptionEnum.ACCESS_TOKEN_INVALID);
             }
 
-            String cert = relayAdminClient.queryDomainNameCertFromBCDNS(getDomainNameCertReqDto.getDomainName(),"").encodeToBase64();
+            String cert = relayAdminClient.queryDomainNameCertFromBCDNS(getDomainNameCertReqDto.getDomainName().trim(),"").encodeToBase64();
             GetDomainNameCertRespDto getDomainNameCertRespDto = new GetDomainNameCertRespDto();
             getDomainNameCertRespDto.setCredential(cert);
             dataResp.setData(getDomainNameCertRespDto);
             dataResp.buildSuccessField();
         } catch (APIException e) {
             dataResp.buildAPIExceptionField(e);
+        } catch (IllegalArgumentException e) {
+            dataResp.buildArgumentExceptionField(e);
         } catch (FacadeException e) {
             dataResp.buildFacadeExceptionField(e);
         } catch (Exception e) {
@@ -159,6 +167,8 @@ public class ApiBiz {
             dataResp.buildSuccessField();
         } catch (APIException e) {
             dataResp.buildAPIExceptionField(e);
+        } catch (IllegalArgumentException e) {
+            dataResp.buildArgumentExceptionField(e);
         } catch (FacadeException e) {
             dataResp.buildFacadeExceptionField(e);
         } catch (Exception e) {
@@ -186,13 +196,15 @@ public class ApiBiz {
                 throw new APIException(ExceptionEnum.ACCESS_TOKEN_INVALID);
             }
 
-            relayAdminClient.startBlockchainAnchor(startBlockchainAnchorReqDto.getDomainName());
+            relayAdminClient.startBlockchainAnchor(startBlockchainAnchorReqDto.getDomainName().trim());
             StartBlockchainAnchorRespDto startBlockchainAnchorRespDto = new StartBlockchainAnchorRespDto();
             startBlockchainAnchorRespDto.setResult(true);
             dataResp.setData(startBlockchainAnchorRespDto);
             dataResp.buildSuccessField();
         } catch (APIException e) {
             dataResp.buildAPIExceptionField(e);
+        } catch (IllegalArgumentException e) {
+            dataResp.buildArgumentExceptionField(e);
         } catch (FacadeException e) {
             dataResp.buildFacadeExceptionField(e);
         } catch (Exception e) {
@@ -220,13 +232,15 @@ public class ApiBiz {
                 throw new APIException(ExceptionEnum.ACCESS_TOKEN_INVALID);
             }
 
-            relayAdminClient.stopBlockchainAnchor(stopBlockchainAnchorReqDto.getDomainName());
+            relayAdminClient.stopBlockchainAnchor(stopBlockchainAnchorReqDto.getDomainName().trim());
             StopBlockchainAnchorRespDto stopBlockchainAnchorRespDto = new StopBlockchainAnchorRespDto();
             stopBlockchainAnchorRespDto.setResult(true);
             dataResp.setData(stopBlockchainAnchorRespDto);
             dataResp.buildSuccessField();
         } catch (APIException e) {
             dataResp.buildAPIExceptionField(e);
+        } catch (IllegalArgumentException e) {
+            dataResp.buildArgumentExceptionField(e);
         } catch (FacadeException e) {
             dataResp.buildFacadeExceptionField(e);
         } catch (Exception e) {
@@ -258,6 +272,8 @@ public class ApiBiz {
             dataResp.buildSuccessField();
         } catch (APIException e) {
             dataResp.buildAPIExceptionField(e);
+        } catch (IllegalArgumentException e) {
+            dataResp.buildArgumentExceptionField(e);
         } catch (FacadeException e) {
             dataResp.buildFacadeExceptionField(e);
         } catch (Exception e) {
@@ -266,6 +282,7 @@ public class ApiBiz {
         }
         return dataResp;
     }
+
     public DataResp<GetBlockchainHeightRespDto> getBlockchainHeight(String accessToken, GetBlockchainHeightReqDto getBlockchainHeightReqDto) {
         DataResp<GetBlockchainHeightRespDto> dataResp = new DataResp<GetBlockchainHeightRespDto>();
         try {
@@ -282,150 +299,19 @@ public class ApiBiz {
             }
 
             String heightStr = relayAdminClient.getBlockchainHeights(getBlockchainHeightReqDto.getDomainName());
+            String cleanedStr = heightStr.replaceAll("[\n\t]+", "");
             GetBlockchainHeightRespDto getBlockchainHeightRespDto = new GetBlockchainHeightRespDto();
-            String s1 = heightStr.replaceAll("\n\t","");
-            String s2 = s1.replaceAll("\t","");
-            String s3 = s2.replaceAll("\n","");
-            getBlockchainHeightRespDto.setHeight(s3);
+            getBlockchainHeightRespDto.setHeight(cleanedStr);
             dataResp.setData(getBlockchainHeightRespDto);
             dataResp.buildSuccessField();
         } catch (APIException e) {
             dataResp.buildAPIExceptionField(e);
+        } catch (IllegalArgumentException e) {
+            dataResp.buildArgumentExceptionField(e);
         } catch (FacadeException e) {
             dataResp.buildFacadeExceptionField(e);
         } catch (Exception e) {
             logger.error("get blockchain height error");
-            dataResp.buildSysExceptionField();
-        }
-        return dataResp;
-    }
-
-    public DataResp<AddCrossChainMsgAclRespDto> addCrossChainMsgAcl(String accessToken, AddCrossChainMsgAclReqDto addCrossChainMsgAclReqDto) {
-        DataResp<AddCrossChainMsgAclRespDto> dataResp = new DataResp<AddCrossChainMsgAclRespDto>();
-        try {
-            //check access token
-            Map<String, String> paramMap = JwtUtil.decode(accessToken);
-            if (paramMap == null) {
-                throw new APIException(ExceptionEnum.ACCESS_TOKEN_INVALID);
-            }
-
-            String userId = paramMap.get(Constants.USER_ID);
-            String token = redisUtil.get(userId);
-            if (!token.equals(accessToken)) {
-                throw new APIException(ExceptionEnum.ACCESS_TOKEN_INVALID);
-            }
-
-            String bizId = relayAdminClient.addCrossChainMsgACL(addCrossChainMsgAclReqDto.getGrantDomain(), addCrossChainMsgAclReqDto.getGrantIdentity(), addCrossChainMsgAclReqDto.getOwnerDomain(), addCrossChainMsgAclReqDto.getOwnerIdentity());
-            AddCrossChainMsgAclRespDto addCrossChainMsgAclRespDto = new AddCrossChainMsgAclRespDto();
-            addCrossChainMsgAclRespDto.setBizId(bizId);
-            dataResp.setData(addCrossChainMsgAclRespDto);
-            dataResp.buildSuccessField();
-        } catch (APIException e) {
-            dataResp.buildAPIExceptionField(e);
-        } catch (FacadeException e) {
-            dataResp.buildFacadeExceptionField(e);
-        } catch (Exception e) {
-            logger.error("add cross chain msg acl error");
-            dataResp.buildSysExceptionField();
-        }
-        return dataResp;
-    }
-
-    public DataResp<DeleteCrossChainMsgAclRespDto> deleteCrossChainMsgAcl(String accessToken, DeleteCrossChainMsgAclReqDto deleteCrossChainMsgAclReqDto) {
-        DataResp<DeleteCrossChainMsgAclRespDto> dataResp = new DataResp<DeleteCrossChainMsgAclRespDto>();
-        try {
-            //check access token
-            Map<String, String> paramMap = JwtUtil.decode(accessToken);
-            if (paramMap == null) {
-                throw new APIException(ExceptionEnum.ACCESS_TOKEN_INVALID);
-            }
-
-            String userId = paramMap.get(Constants.USER_ID);
-            String token = redisUtil.get(userId);
-            if (!token.equals(accessToken)) {
-                throw new APIException(ExceptionEnum.ACCESS_TOKEN_INVALID);
-            }
-
-            relayAdminClient.deleteCrossChainMsgACL(deleteCrossChainMsgAclReqDto.getBizId());
-            DeleteCrossChainMsgAclRespDto deleteCrossChainMsgAclRespDto = new DeleteCrossChainMsgAclRespDto();
-            deleteCrossChainMsgAclRespDto.setResult(true);
-            dataResp.setData(deleteCrossChainMsgAclRespDto);
-            dataResp.buildSuccessField();
-        } catch (APIException e) {
-            dataResp.buildAPIExceptionField(e);
-        } catch (FacadeException e) {
-            dataResp.buildFacadeExceptionField(e);
-        } catch (Exception e) {
-            logger.error("delete cross chain msg acl error");
-            dataResp.buildSysExceptionField();
-        }
-        return dataResp;
-    }
-
-    public DataResp<GetMatchedCrossChainAclItemsRespDto> getMatchedCrossChainAclitems(String accessToken, GetMatchedCrossChainAclItemsReqDto getMatchedCrossChainAclItemsReqDto) {
-        DataResp<GetMatchedCrossChainAclItemsRespDto> dataResp = new DataResp<GetMatchedCrossChainAclItemsRespDto>();
-        try {
-            //check access token
-            Map<String, String> paramMap = JwtUtil.decode(accessToken);
-            if (paramMap == null) {
-                throw new APIException(ExceptionEnum.ACCESS_TOKEN_INVALID);
-            }
-
-            String userId = paramMap.get(Constants.USER_ID);
-            String token = redisUtil.get(userId);
-            if (!token.equals(accessToken)) {
-                throw new APIException(ExceptionEnum.ACCESS_TOKEN_INVALID);
-            }
-
-            List<String> bizId = relayAdminClient.getMatchedCrossChainACLBizIds(getMatchedCrossChainAclItemsReqDto.getGrantDomain(), getMatchedCrossChainAclItemsReqDto.getGrantIdentity(), getMatchedCrossChainAclItemsReqDto.getOwnerDomain(), getMatchedCrossChainAclItemsReqDto.getOwnerIdentity());
-            if (bizId.isEmpty()) {
-                throw new APIException(ExceptionEnum.NOT_EXIST);
-            }
-            GetMatchedCrossChainAclItemsRespDto getMatchedCrossChainAclItemsRespDto = new GetMatchedCrossChainAclItemsRespDto();
-            getMatchedCrossChainAclItemsRespDto.setBizId(bizId);
-            dataResp.setData(getMatchedCrossChainAclItemsRespDto);
-            dataResp.buildSuccessField();
-        } catch (APIException e) {
-            dataResp.buildAPIExceptionField(e);
-        } catch (FacadeException e) {
-            dataResp.buildFacadeExceptionField(e);
-        } catch (Exception e) {
-            logger.error("get matched cross chain acl items error");
-            dataResp.buildSysExceptionField();
-        }
-        return dataResp;
-    }
-
-    public DataResp<GetCrossChainMsgAclRespDto> getCrossChainMsgAcl(String accessToken, GetCrossChainMsgAclReqDto getCrossChainMsgAclReqDto) {
-        DataResp<GetCrossChainMsgAclRespDto> dataResp = new DataResp<GetCrossChainMsgAclRespDto>();
-        try {
-            //check access token
-            Map<String, String> paramMap = JwtUtil.decode(accessToken);
-            if (paramMap == null) {
-                throw new APIException(ExceptionEnum.ACCESS_TOKEN_INVALID);
-            }
-
-            String userId = paramMap.get(Constants.USER_ID);
-            String token = redisUtil.get(userId);
-            if (!token.equals(accessToken)) {
-                throw new APIException(ExceptionEnum.ACCESS_TOKEN_INVALID);
-            }
-
-            CrossChainMsgACLItem crossChainMsgACLItem = relayAdminClient.getCrossChainMsgACL(getCrossChainMsgAclReqDto.getBizId());
-            if (ObjectUtil.isNull(crossChainMsgACLItem)) {
-                throw new APIException(ExceptionEnum.NOT_EXIST);
-            }
-
-            GetCrossChainMsgAclRespDto getCrossChainMsgAclRespDtot = new GetCrossChainMsgAclRespDto();
-            getCrossChainMsgAclRespDtot.setInforJson(JsonUtils.toJSONString(crossChainMsgACLItem));
-            dataResp.setData(getCrossChainMsgAclRespDtot);
-            dataResp.buildSuccessField();
-        } catch (APIException e) {
-            dataResp.buildAPIExceptionField(e);
-        } catch (FacadeException e) {
-            dataResp.buildFacadeExceptionField(e);
-        } catch (Exception e) {
-            logger.error("get cross chain msg acl error");
             dataResp.buildSysExceptionField();
         }
         return dataResp;
@@ -452,6 +338,8 @@ public class ApiBiz {
             dataResp.buildSuccessField();
         } catch (APIException e) {
             dataResp.buildAPIExceptionField(e);
+        } catch (IllegalArgumentException e) {
+            dataResp.buildArgumentExceptionField(e);
         } catch (Exception e) {
             logger.error("get ip list error");
             dataResp.buildSysExceptionField();

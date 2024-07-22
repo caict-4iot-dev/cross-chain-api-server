@@ -19,6 +19,6 @@ public class ApplyDomainNameReqDto {
     private String domainName;
 
     @NotBlank(message = DESC_VALID_NULL)
-    @Length(min = 1, max = 128, message = DESC_VALID_STRING)
+    @Length(min = 1, max = 70, message = DESC_VALID_STRING)
     private String publicKey;
 }

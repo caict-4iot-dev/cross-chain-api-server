@@ -3,6 +3,7 @@ package org.system.api.dto.resp;
 
 import com.alipay.antchain.bridge.commons.exception.AntChainBridgeCommonsException;
 import com.alipay.antchain.bridge.relayer.facade.admin.utils.FacadeException;
+import com.auth0.jwt.exceptions.JWTVerificationException;
 import org.system.api.enums.ExceptionEnum;
 import org.system.api.exception.APIException;
 
@@ -20,6 +21,10 @@ public class Resp implements Serializable {
 
     public void buildAPIExceptionField(APIException e) {
         buildCommonField(e.getErrorCode(), e.getErrorMessage());
+    }
+
+    public void buildArgumentExceptionField(IllegalArgumentException e) {
+        buildCommonField(ExceptionEnum.PARAM_ERROR.getErrorCode(), e.getMessage());
     }
 
     public void buildFacadeExceptionField(FacadeException e) {

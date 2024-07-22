@@ -60,30 +60,6 @@ public class CrossChainServiceApiController  {
         return apiBiz.getBlockchainHeight(accessToken, getBlockchainHeightReqDto);
     }
 
-    @PostMapping(value = "/addCrossChainMsgAcl")
-    public DataResp<AddCrossChainMsgAclRespDto> addCrossChainMsgAcl(@RequestHeader("accessToken") String accessToken, @Valid @RequestBody AddCrossChainMsgAclReqDto addCrossChainMsgAclReqDto) {
-        log.info("request url:{}******params:{}", "/server/api/addCrossChainMsgAcl", JSONObject.toJSON(addCrossChainMsgAclReqDto));
-        return apiBiz.addCrossChainMsgAcl(accessToken, addCrossChainMsgAclReqDto);
-    }
-
-    @PostMapping(value = "/deleteCrossChainMsgAcl")
-    public DataResp<DeleteCrossChainMsgAclRespDto> deleteCrossChainMsgAcl(@RequestHeader("accessToken") String accessToken, @Valid @RequestBody DeleteCrossChainMsgAclReqDto deleteCrossChainMsgAclReqDto) {
-        log.info("request url:{}******params:{}", "/server/api/deleteCrossChainMsgAcl", JSONObject.toJSON(deleteCrossChainMsgAclReqDto));
-        return apiBiz.deleteCrossChainMsgAcl(accessToken, deleteCrossChainMsgAclReqDto);
-    }
-
-    @PostMapping(value = "/getMatchedCrosschainAclitems")
-    public DataResp<GetMatchedCrossChainAclItemsRespDto> getMatchedCrossChainAclitems(@RequestHeader("accessToken") String accessToken, @Valid @RequestBody GetMatchedCrossChainAclItemsReqDto getMatchedCrossChainAclItemsReqDto) {
-        log.info("request url:{}******params:{}", "/server/api/getMatchedCrosschainAclitems", JSONObject.toJSON(getMatchedCrossChainAclItemsReqDto));
-        return apiBiz.getMatchedCrossChainAclitems(accessToken, getMatchedCrossChainAclItemsReqDto);
-    }
-
-    @PostMapping(value = "/getCrossChainMsgAcl")
-    public DataResp<GetCrossChainMsgAclRespDto> getCrossChainMsgAcl(@RequestHeader("accessToken") String accessToken, @Valid @RequestBody GetCrossChainMsgAclReqDto getCrossChainMsgAclReqDto) {
-        log.info("request url:{}******params:{}", "/server/api/getCrossChainMsgAcl", JSONObject.toJSON(getCrossChainMsgAclReqDto));
-        return apiBiz.getCrossChainMsgAcl(accessToken, getCrossChainMsgAclReqDto);
-    }
-
     @PostMapping(value = "/getIpList")
     public DataResp<GetIpListRespDto> getIpList(@RequestHeader("accessToken") String accessToken) {
         log.info("request url:{}", "/server/api/getIpList");

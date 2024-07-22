@@ -3,6 +3,7 @@ package org.system.api.biz;
 import cn.bif.module.encryption.key.PrivateKeyManager;
 import cn.bif.module.encryption.key.PublicKeyManager;
 import cn.hutool.core.date.DateUtil;
+import com.auth0.jwt.exceptions.JWTVerificationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -76,7 +77,7 @@ public class AuthBiz {
         DataResp<ApplyApiKeyRespDto> dataResp = new DataResp<ApplyApiKeyRespDto>();
         try {
             if (!PublicKeyManager.isAddressValid(apiKeyApplyReqDto.getUserId())) {
-                throw new APIException(ExceptionEnum.PARAM_ERROR);
+                throw new APIException(ExceptionEnum.PARAM_ERROR.getErrorCode(), "invalid address");
             }
             if (apiKeyApplyReqDto.getUserId().equals(managerAddress)) {
                 throw new APIException(ExceptionEnum.USER_ID_ERROR);
@@ -191,6 +192,8 @@ public class AuthBiz {
             dataResp.buildSuccessField();
         } catch (APIException e) {
             dataResp.buildAPIExceptionField(e);
+        } catch (IllegalArgumentException e) {
+            dataResp.buildArgumentExceptionField(e);
         } catch (Exception e) {
             logger.error("audit apply error");
             dataResp.buildSysExceptionField();

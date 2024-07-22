@@ -20,6 +20,5 @@ public class AddBlockchainAnchorReqDto {
     private String product;
 
     @NotBlank(message = DESC_VALID_NULL)
-    @Length(min = 1, max = 512, message = DESC_VALID_STRING)
     private String confFile;
 }
