@@ -28,11 +28,6 @@ public class AuthController {
     @PostMapping(value = "/applyApiKey")
     public DataResp<ApplyApiKeyRespDto> applyApiKey(@Validated @RequestBody ApplyApiKeyReqDto applyApiKeyReqDto) {
         log.info("request url:{}******params:{}", "/auth/applyApiKey", JSONObject.toJSON(applyApiKeyReqDto));
-        DataResp<ApplyApiKeyRespDto> respDtoDataResp = authBiz.applyApiKey(applyApiKeyReqDto);
-        if (respDtoDataResp.getData() == null) {
-            // 返回结果为空，抛出异常或返回错误信息
-            throw new IllegalStateException("Api key application failed.");
-        }
         return authBiz.applyApiKey(applyApiKeyReqDto);
     }
 
