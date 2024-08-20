@@ -31,7 +31,7 @@
         <dependency>
             <groupId>org.redisson</groupId>
             <artifactId>redisson</artifactId>
-            <version>3.11.0</version>
+            <version>3.22.0</version>
         </dependency>
         <dependency>
             <groupId>com.auth0</groupId>
@@ -112,7 +112,7 @@
         <dependency>
             <groupId>com.alipay.antchain.bridge</groupId>
             <artifactId>r-facade</artifactId>
-            <version>0.1.1</version>
+            <version>0.2.0</version>
         </dependency>
         <dependency>
             <groupId>com.google.guava</groupId>
